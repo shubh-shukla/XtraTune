@@ -1,7 +1,9 @@
+import { TrendingSongs } from "./sections/trending-songs";
+export const dynamic = "force-dynamic"
 export default async function Home() {
   return (
     <>
-      <div className="flex h-full flex-col gap-3 justify-center items-center">Xtratune</div>
-      </>    
+      <TrendingSongs />
+    </>
   );
 }
