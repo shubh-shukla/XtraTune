@@ -43,7 +43,6 @@ export const Player = ({
       }else{
         setCurrentIndex(currentSong+1);
       }
-      console.log("end");
     },
     volume: volume,
   });
@@ -178,7 +177,6 @@ export const Player = ({
             onClick={() => {
               setDownloading(true);
               const a = document.createElement("a");
-              console.log(downloadURL);
               fetch(downloadURL).then((res) => {
                 res.blob().then((blob) => {
                   const url = window.URL.createObjectURL(blob);

@@ -48,7 +48,6 @@ export const AlbumPageCard = ({
           </p>
           <Button
             onClick={() => {
-              console.log(songs[currentIndex]?.id, id);
               if (songs.includes({ id })) {
                 if (songs[songs.length - 1].id === id) return;
                 setCurrentIndex(songs.findIndex((song) => song.id === id));
@@ -67,7 +66,6 @@ export const AlbumPageCard = ({
 
       <Button
         onClick={() => {
-          console.log(songs[currentIndex]?.id, id);
           if (songs.includes({ id })) {
             if (songs[songs.length - 1].id === id) return;
             setCurrentIndex(songs.findIndex((song) => song.id === id));
