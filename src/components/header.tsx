@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ModeToggle } from "./change-mode";
 import { Icons } from "./icons";
 import { SearchBox } from "./searchBox";
+import { AuthButton } from "./auth-button";
 
 export const Header = () => {
   return (
@@ -11,7 +12,10 @@ export const Header = () => {
         <p className="text-xl font-cal pt-1 ">XtraTune</p>
       </Link>
       <SearchBox className=" hidden sm:block flex-1 w-full" />
-      <ModeToggle />
+      <div className="flex items-center gap-2">
+        <AuthButton />
+        <ModeToggle />
+      </div>
     </header>
   );
 };

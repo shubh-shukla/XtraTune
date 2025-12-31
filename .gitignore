@@ -1,5 +1,6 @@
 node_modules
 .history
 .env
+.env.local
 .next
 package-lock.json
