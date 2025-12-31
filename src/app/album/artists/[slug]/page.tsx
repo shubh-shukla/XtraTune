@@ -1,39 +1,61 @@
 import { AlbumPageCard } from "@/components/album-page-card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { music } from "@/lib/music";
-import { AlbumData } from "@/typings/albumdata";
-import { Playlist } from "@/typings/playlist";
 import Image from "next/image";
 import { Balancer } from "react-wrap-balancer";
 import { AlbumPlayBtn } from "./album-play-btn";
 import { ArtistDetails } from "@/typings/artist-details";
-import { ArtistSongs, ArtistSongsRoot } from "@/typings/artist-songs";
-import { ArtistPlaylist } from "@/typings/artist-playlist";
+import { ArtistSongs } from "@/typings/artist-songs";
 import axios from "axios";
 
 const getArtistData = async (slug: string) => {
   const id = slug.split("/")[0];
   try {
-    // FIXME: replace this any with unknown type
-    // TODO: add playlists
-    const data = await axios.all([
-      music(`artists?id=${id}`),
-      // music(`artists?id=${id}/albums`),
-      music(`artists/${id}/songs?page=1`),
-      music(`artists/${id}/songs?page=2`),
-      music(`artists/${id}/songs?page=3`),
+    const toImage = (img: any) => ({ ...img, link: img.url });
+    const toDownload = (dl: any) => ({ ...dl, link: dl.url });
+    const toSong = (song: any) => ({
+      ...song,
+      primaryArtists: song.artists?.primary?.map((a: any) => a.name).join(", ") ?? "",
+      primaryArtistsId: song.artists?.primary?.map((a: any) => a.id).join(", ") ?? "",
+      featuredArtists: song.artists?.featured?.map((a: any) => a.name).join(", ") ?? "",
+      featuredArtistsId: song.artists?.featured?.map((a: any) => a.id).join(", ") ?? "",
+      image: song.image?.map(toImage) ?? [],
+      downloadUrl: song.downloadUrl?.map(toDownload) ?? [],
+    });
+
+    const [detailRes, songsRes] = await axios.all([
+      music.get(`/artists/${id}`),
+      music.get(`/artists/${id}/songs?page=0&limit=50`),
     ]);
 
-    data[1].data.data.results = data[1].data.data.results.concat(
-      data[2].data.data.results
-    );
-    data[1].data.data.results = data[1].data.data.results.concat(
-      data[3].data.data.results
-    );
+    const artistDetail: ArtistDetails = {
+      ...detailRes.data.data,
+      image: detailRes.data.data?.image?.map(toImage) ?? [],
+      followerCount: String(detailRes.data.data?.followerCount ?? "0"),
+      fanCount: String(detailRes.data.data?.fanCount ?? "0"),
+      isVerified: Boolean(detailRes.data.data?.isVerified),
+      dominantLanguage: detailRes.data.data?.dominantLanguage ?? "",
+      dominantType: detailRes.data.data?.dominantType ?? "",
+      bio: detailRes.data.data?.bio ?? [],
+      dob: detailRes.data.data?.dob ?? "",
+      fb: detailRes.data.data?.fb ?? "",
+      twitter: detailRes.data.data?.twitter ?? "",
+      wiki: detailRes.data.data?.wiki ?? "",
+      availableLanguages: detailRes.data.data?.availableLanguages ?? [],
+      isRadioPresent: Boolean(detailRes.data.data?.isRadioPresent),
+    };
+
+    const artistSongs: ArtistSongs = {
+      total: songsRes.data?.data?.total ?? 0,
+      lastPage:
+        (songsRes.data?.data?.songs?.length ?? 0) <
+        (Number(songsRes.data?.data?.limit ?? 50)),
+      results: songsRes.data?.data?.songs?.map(toSong) ?? [],
+    };
+
     return {
-      artistDetail: data[0].data.data,
-      // artistPlaylist: data[1].data.data,
-      artistSongs: data[1].data.data,
+      artistDetail,
+      artistSongs,
     };
   } catch (e) {
     return null;

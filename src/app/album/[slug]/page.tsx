@@ -10,17 +10,76 @@ import { AlbumPlayBtn } from "./album-play-btn";
 const getAlbumData = async (slug: string) => {
   const type = slug.split("-")[1];
   const id = slug.split("-")[0];
+  const toImage = (img: any) => ({ ...img, link: img.url });
+  const toDownload = (dl: any) => ({ ...dl, link: dl.url });
+  const toSong = (song: any) => ({
+    ...song,
+    primaryArtists: song.artists?.primary?.map((a: any) => a.name).join(", ") ?? "",
+    primaryArtistsId: song.artists?.primary?.map((a: any) => a.id).join(", ") ?? "",
+    featuredArtists: song.artists?.featured?.map((a: any) => a.name).join(", ") ?? "",
+    featuredArtistsId: song.artists?.featured?.map((a: any) => a.id).join(", ") ?? "",
+    image: song.image?.map(toImage) ?? [],
+    downloadUrl: song.downloadUrl?.map(toDownload) ?? [],
+  });
+
   if (type == "album") {
-    const { data } = await music(`albums?id=${id}`);
-    return data as AlbumData;
+    const { data } = await music.get(`/albums?id=${id}`);
+    const normalized: AlbumData = {
+      status: data.success ? "SUCCESS" : "FAILED",
+      message: null,
+      data: {
+        ...data.data,
+        primaryArtistsId: data.data?.artists?.primary?.map((a: any) => a.id).join(", ") ?? "",
+        primaryArtists: data.data?.artists?.primary?.map((a: any) => a.name).join(", ") ?? "",
+        featuredArtists: data.data?.artists?.featured ?? [],
+        artists: data.data?.artists?.all ?? [],
+        image: data.data?.image?.map(toImage) ?? [],
+        songs: data.data?.songs?.map(toSong) ?? [],
+        songCount: String(data.data?.songCount ?? "0"),
+        releaseDate: data.data?.releaseDate ?? "",
+        year: String(data.data?.year ?? ""),
+      },
+    };
+
+    return normalized;
   } else 
   if (type == "artist") {
-    const { data } = await music(`artists?id=${id}`);
-    return data as AlbumData;
+    const { data } = await music.get(`/artists/${id}`);
+    const songsRes = await music.get(`/artists/${id}/songs?page=0&limit=50`);
+
+    const normalized: AlbumData = {
+      status: data.success ? "SUCCESS" : "FAILED",
+      message: null,
+      data: {
+        ...(data.data ?? {}),
+        primaryArtistsId: data.data?.artists?.primary?.map((a: any) => a.id).join(", ") ?? "",
+        primaryArtists: data.data?.artists?.primary?.map((a: any) => a.name).join(", ") ?? "",
+        featuredArtists: data.data?.artists?.featured ?? [],
+        artists: data.data?.artists?.all ?? [],
+        image: data.data?.image?.map(toImage) ?? [],
+        songs: songsRes.data?.data?.songs?.map(toSong) ?? [],
+        songCount: String(data.data?.songCount ?? songsRes.data?.data?.songs?.length ?? "0"),
+        releaseDate: data.data?.releaseDate ?? "",
+        year: String(data.data?.year ?? ""),
+      },
+    };
+
+    return normalized;
   } else 
   {
-    const { data } = await music(`playlists?id=${id}`);
-    return data as Playlist;
+    const { data } = await music.get(`/playlists?id=${id}`);
+    const normalized: Playlist = {
+      status: data.success ? "SUCCESS" : "FAILED",
+      message: null,
+      data: {
+        ...data.data,
+        image: data.data?.image?.map(toImage) ?? [],
+        songs: data.data?.songs?.map(toSong) ?? [],
+        songCount: String(data.data?.songCount ?? data.data?.songs?.length ?? "0"),
+      },
+    };
+
+    return normalized;
   }
 };
 export default async function Page({ params }: { params: { slug: string } }) {

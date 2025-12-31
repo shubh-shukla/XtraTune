@@ -1,8 +1,11 @@
-import 'server-only'
+import "server-only";
 import axios from "axios";
-const URL=process.env.SCRAPER_URL;
-if(!URL) throw new Error("No scraper url provided")
-const music=axios.create({
-    baseURL:URL,
-})
-export {music};
+
+const URL = process.env.SCRAPER_URL;
+if (!URL) throw new Error("No scraper url provided");
+
+const music = axios.create({
+    baseURL: URL,
+});
+
+export { music };
