@@ -4,7 +4,7 @@ export const MainLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <main
       className={cn(
-        "col-span-5 lg:col-span-9 max-height-screen main-layout  overflow-y-scroll px-4 pb-[100px]"
+        "col-span-5 lg:col-span-9 main-layout px-4 pb-[120px] page-shell"
       )}
     >
       {children}

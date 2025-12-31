@@ -46,13 +46,13 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          "  bg-background  font-sans antialiased min-height-screen  ",
+          "bg-background text-foreground font-sans subpixel-antialiased min-height-screen",
           fontSans.variable,
           fontHeading.variable
         )}
       >
         <Provider>
-          <div className="  md:grid grid-cols-7 lg:grid-cols-11 overflow-hidden min-height-screen max-height-screen ">
+          <div className="md:grid grid-cols-7 lg:grid-cols-11 min-height-screen">
             <Sidebar />
             <MainLayout>
               <div className=" z-50 pb-5 bg-background sm:bg-transparent standalone:fixed top-0 left-0 right-0 px-5  sm:static ">
