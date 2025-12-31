@@ -67,15 +67,34 @@ const getAlbumData = async (slug: string) => {
     return normalized;
   } else 
   {
-    const { data } = await music.get(`/playlists?id=${id}`);
+    const pageSize = 100;
+    let page = 0;
+    let allSongs: any[] = [];
+    let firstPayload: any = null;
+
+    // Paginate until we exhaust the playlist to avoid the default 10-item limit.
+    // Break conditions: returned page smaller than limit, or we collected declared songCount.
+    while (true) {
+      const { data } = await music.get(`/playlists?id=${id}&page=${page}&limit=${pageSize}`);
+      if (!firstPayload) firstPayload = data;
+      const batch = data?.data?.songs ?? [];
+      allSongs = allSongs.concat(batch);
+
+      const declaredCount = Number(data?.data?.songCount ?? allSongs.length);
+      const fetchedEnough = allSongs.length >= declaredCount;
+      const noMore = batch.length < pageSize;
+      if (noMore || fetchedEnough) break;
+      page += 1;
+    }
+
     const normalized: Playlist = {
-      status: data.success ? "SUCCESS" : "FAILED",
+      status: firstPayload?.success ? "SUCCESS" : "FAILED",
       message: null,
       data: {
-        ...data.data,
-        image: data.data?.image?.map(toImage) ?? [],
-        songs: data.data?.songs?.map(toSong) ?? [],
-        songCount: String(data.data?.songCount ?? data.data?.songs?.length ?? "0"),
+        ...(firstPayload?.data ?? {}),
+        image: firstPayload?.data?.image?.map(toImage) ?? [],
+        songs: allSongs.map(toSong) ?? [],
+        songCount: String(firstPayload?.data?.songCount ?? allSongs.length ?? "0"),
       },
     };
 
