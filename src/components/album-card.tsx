@@ -85,9 +85,12 @@ export const AlbumCard = ({
             toggleLike(likeType, id);
           }}
           aria-label={isLiked ? "Unlike" : "Like"}
-          className="absolute right-2 top-2 grid h-9 w-9 place-items-center rounded-full bg-black/50 text-white shadow-sm backdrop-blur transition hover:bg-black/70"
+          className={cn(
+            "absolute right-2 top-2 grid h-9 w-9 place-items-center rounded-full bg-black/50 text-white shadow-sm backdrop-blur transition hover:scale-105",
+            isLiked && "bg-rose-500/20 text-rose-200"
+          )}
         >
-          <Heart className={cn("h-4 w-4", isLiked ? "fill-rose-500 text-rose-400" : "text-white")} />
+          <Heart className={cn("h-4 w-4", isLiked && "fill-rose-500 text-rose-200")}/>
         </button>
       </div>
       <div className="space-y-1 text-sm">

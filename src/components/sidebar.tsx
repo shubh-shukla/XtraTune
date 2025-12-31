@@ -63,16 +63,16 @@ export const Sidebar = () => {
       <div className="mt-16 font-normal space-y-4">
         <h2 className="text-muted-foreground space-y-3 ">Playlists</h2>
         <div className="space-y-4 font-inter text-secondary-foreground text-sm ">
-          <Link href="/comingsoon" className="block">
+          <Link href="/search/Arijit%20Singh" className="block">
             Let&apos;s Play - Arijit Singh
           </Link>
-          <Link href="/comingsoon" className="block">
+          <Link href="/search/2000s%20Duets" className="block">
             2000s Duets
           </Link>
-          <Link href="/comingsoon" className="block">
+          <Link href="/search/Kumar%20Sanu" className="block">
             Let&apos;s Play - Kumar Sanu
           </Link>
-          <Link href="/comingsoon" className="block">
+          <Link href="/search/Indipop%20Hits" className="block">
             Best Of Indipop
           </Link>
         </div>

@@ -62,12 +62,26 @@ export const SongCard = ({
   return (
     <Card
       onClick={() => {
-        if (songs.includes({ id })) {
-          if (songs[songs.length - 1].id === id) return;
-          setCurrentIndex(songs.findIndex((song) => song.id === id));
+        const existingIndex = songs.findIndex((song) => song.id === id);
+        if (existingIndex !== -1) {
+          setCurrentIndex(existingIndex);
           return;
         }
-        setsong([...songs, { id }], songs.length);
+        setsong(
+          [
+            ...songs,
+            {
+              id,
+              title,
+              artist:
+                normalizeArtists(artists)
+                  .map((a) => a.name)
+                  .join(", ") || undefined,
+              image: imgURL,
+            },
+          ],
+          songs.length
+        );
       }}
       className={cn(
         " overflow-clip border-none  rounded-none w-[250px] ",
@@ -98,9 +112,12 @@ export const SongCard = ({
             toggleLike("track", id);
           }}
           aria-label={isLiked ? "Unlike" : "Like"}
-          className="absolute right-2 top-2 grid h-9 w-9 place-items-center rounded-full bg-black/50 text-white shadow-sm backdrop-blur transition hover:bg-black/70"
+          className={cn(
+            "absolute right-2 top-2 grid h-9 w-9 place-items-center rounded-full bg-black/50 text-white shadow-sm backdrop-blur transition hover:scale-105",
+            isLiked && "bg-rose-500/20 text-rose-200"
+          )}
         >
-          <Heart className={cn("h-4 w-4", isLiked ? "fill-rose-500 text-rose-400" : "text-white")} />
+          <Heart className={cn("h-4 w-4", isLiked && "fill-rose-500 text-rose-200")}/>
         </button>
       </div>
       <div className="space-y-1 text-sm ">

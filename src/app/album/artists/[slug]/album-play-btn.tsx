@@ -11,7 +11,16 @@ export const AlbumPlayBtn = ({ album }: { album: Song[] | Playlist[] }) => {
     const setPlaylist = useSongStore(state=>state.setPlaylist);
     const setCurrentIndex = useSongStore(state=>state.setCurrentSong);
     const startPlaylist=()=>{
-        setPlaylist(album.map((song) => ({ id: song.id})))
+        setPlaylist(
+          album.map((song) => ({
+            id: song.id,
+            title: song.name.split("(")[0].replace("&#039;", "'"),
+            artist: song.primaryArtists,
+            image: song.image?.[1]?.link || song.image?.[0]?.link,
+            duration: Number(song.duration),
+          })),
+          0
+        )
         setCurrentIndex(0)
     }
     return(

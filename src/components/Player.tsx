@@ -9,18 +9,22 @@ import { Skeleton } from "./ui/skeleton";
 import { Slider } from "./ui/slider";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { useSongStore } from "@/store/song-store";
+import { Heart, Bookmark } from "lucide-react";
+import { useLikeStore } from "@/store/likes-store";
 export const Player = ({
   url,
   album,
   imageURL,
   title,
   downloadURL,
+  trackId,
 }: {
   url: string;
   imageURL: string;
   title: string;
   album: string;
   downloadURL: string;
+  trackId?: string;
 }) => {
   const currentSong = useSongStore((state) => state.currentSong);
   const setCurrentIndex = useSongStore((state) => state.setCurrentSong);
@@ -32,17 +36,19 @@ export const Player = ({
   const [barPostion, setBarPosition] = useState(0);
   const [downloading, setDownloading] = useState(false);
   const [link] = useState(url);
+  const safeId = trackId || "";
+  const { likes, saves, toggleLike, toggleSave } = useLikeStore((state) => state);
+  const isLiked = safeId ? likes.track.includes(safeId) : false;
+  const isSaved = safeId ? saves.track.includes(safeId) : false;
   const [play, { pause, duration, sound }] = useSound(link, {
     onload: () => {
       setIsLoading(false);
     },
     onend: () => {
       setIsPlaying(false);
-      if(currentSong===playlist.length-1){
-        setCurrentIndex(0);
-      }else{
-        setCurrentIndex(currentSong+1);
-      }
+      if (!playlist.length) return;
+      const nextIndex = playlist.length === 1 ? 0 : (currentSong + 1) % playlist.length;
+      setCurrentIndex(nextIndex);
     },
     volume: volume,
   });
@@ -76,6 +82,10 @@ export const Player = ({
       sound?.stop();
     };
   }, [sound, isLoading]);
+
+  useEffect(() => {
+    setBarPosition(0);
+  }, [url]);
 
   return (
     <Card
@@ -166,11 +176,17 @@ export const Player = ({
         {/* right side */}
         <div className="flex justify-end items-center md:gap-x-2 pr-4">
           <Button
-            className="active:scale-90 hidden sm:inline-flex transition-transform"
+            onClick={() => toggleLike("track", trackId)}
+            disabled={!trackId}
+            className={cn(
+              "active:scale-90 hidden sm:inline-flex transition-transform",
+              isLiked && "text-rose-400"
+            )}
             variant="ghost"
             size="icon"
+            aria-label={isLiked ? "Unlike" : "Like"}
           >
-            <Icons.like className="h-4 w-4" />
+            <Heart className={cn("h-4 w-4", isLiked && "fill-rose-500 text-rose-400")}/>
           </Button>
           <Button
             disabled={isLoading || downloading}
@@ -205,8 +221,11 @@ export const Player = ({
             className=" hidden sm:flex active:scale-90 transition-transform"
             variant="ghost"
             size="icon"
+            onClick={() => toggleSave("track", trackId || "")}
+            disabled={!trackId}
+            aria-label={isSaved ? "Unsave" : "Save"}
           >
-            <Icons.save className="h-4 w-4" />
+            <Bookmark className={cn("h-4 w-4", isSaved && "fill-primary text-primary")} />
           </Button>
           <div className="hidden md:flex items-center gap-x-2">
             <Button
