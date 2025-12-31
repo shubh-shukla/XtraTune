@@ -34,12 +34,11 @@ export const Sidebar = () => {
           </Link>
 
           <Link
-            // href="/comingsoon"
-            href="/album"
+            href="/categories"
             className={cn(
               " w-full  p-1.5 py-2   leading-[0px] rounded-md font-medium flex items-center gap-x-4  ",
               // pathname === "/Categories" && [
-              pathname === "/album" && [
+              pathname === "/categories" && [
                 "bg-white dark:bg-orange-400 focus:ring-2 ring-0 ring-orange-400 dark:ring-white dark:text-white text-orange-400  outline-none border-none",
               ]
             )}
