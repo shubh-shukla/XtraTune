@@ -82,11 +82,22 @@ export const SongCard = ({
         {/* </a> */}
         <p className="text-xs text-muted-foreground">
           {type} •{" "}
-          {artists
-            ?.map((artist) => artist.name)
-            .join(", ")
-            .slice(0, 22)
-            .concat("...")}
+          {(() => {
+            const list = Array.isArray(artists)
+              ? artists
+              : typeof artists === "string"
+              ? artists
+                  .split(",")
+                  .map((name) => ({ name: name.trim() }))
+                  .filter((a) => a.name)
+              : [];
+            if (list.length === 0) return "";
+            return list
+              .map((artist) => artist.name)
+              .join(", ")
+              .slice(0, 22)
+              .concat(list.length > 0 ? "..." : "");
+          })()}
         </p>
         {
           singer && <p className=" line-clamp-1 text-xs text-muted-foreground">
