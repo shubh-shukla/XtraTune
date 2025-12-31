@@ -44,6 +44,17 @@ export const SongCard = ({
   const setsong = useSongStore((state) => state.setPlaylist)
   const songs = useSongStore((state) => state.playlist)
   const currentIndex = useSongStore((state) => state.currentSong)
+
+  const normalizeArtists = (value: SongProps["artists"]): { name: string }[] => {
+    if (Array.isArray(value)) return value;
+    if (typeof value === "string") {
+      return value
+        .split(",")
+        .map((name) => ({ name: name.trim() }))
+        .filter((a) => a.name);
+    }
+    return [];
+  };
   return (
     <Card
       onClick={() => {
@@ -85,14 +96,7 @@ export const SongCard = ({
         <p className="text-xs text-muted-foreground">
           {type} •{" "}
           {(() => {
-            const list = Array.isArray(artists)
-              ? artists
-              : typeof artists === "string"
-              ? artists
-                  .split(",")
-                  .map((name) => ({ name: name.trim() }))
-                  .filter((a) => a.name)
-              : [];
+            const list = normalizeArtists(artists);
             if (list.length === 0) return "";
             return list
               .map((artist) => artist.name)
