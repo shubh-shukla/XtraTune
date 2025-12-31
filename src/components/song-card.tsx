@@ -3,6 +3,8 @@ import { cn } from "@/lib/utils";
 import { Card } from "./ui/card";
 import Image from "next/image";
 import { useSongStore } from "@/store/song-store";
+import { useLikeStore } from "@/store/likes-store";
+import { Heart } from "lucide-react";
 interface SongProps extends React.HTMLAttributes<HTMLDivElement> {
   imageURL: {
     link: string;
@@ -44,6 +46,8 @@ export const SongCard = ({
   const setsong = useSongStore((state) => state.setPlaylist)
   const songs = useSongStore((state) => state.playlist)
   const currentIndex = useSongStore((state) => state.currentSong)
+  const isLiked = useLikeStore((state) => state.isLiked("track", id));
+  const toggleLike = useLikeStore((state) => state.toggleLike);
 
   const normalizeArtists = (value: SongProps["artists"]): { name: string }[] => {
     if (Array.isArray(value)) return value;
@@ -75,7 +79,7 @@ export const SongCard = ({
           height: `${height}px` || "250px",
           width: `${width}px` || "250px",
         }}
-        className="overflow-hidden rounded-md  "
+        className="overflow-hidden rounded-md relative"
       >
         <Image
           src={imgURL}
@@ -88,6 +92,16 @@ export const SongCard = ({
             aspectRatio === "portrait" ? "aspect-[3/4]" : "aspect-square"
           )}
         />
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleLike("track", id);
+          }}
+          aria-label={isLiked ? "Unlike" : "Like"}
+          className="absolute right-2 top-2 grid h-9 w-9 place-items-center rounded-full bg-black/50 text-white shadow-sm backdrop-blur transition hover:bg-black/70"
+        >
+          <Heart className={cn("h-4 w-4", isLiked ? "fill-rose-500 text-rose-400" : "text-white")} />
+        </button>
       </div>
       <div className="space-y-1 text-sm ">
         {/* <a href={url}> */}

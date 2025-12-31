@@ -12,7 +12,7 @@ export const Header = () => {
         <p className="text-xl font-cal pt-1 ">XtraTune</p>
       </Link>
       <SearchBox className=" hidden sm:block flex-1 w-full" />
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-4">
         <AuthButton />
         <ModeToggle />
       </div>

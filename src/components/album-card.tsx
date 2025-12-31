@@ -3,6 +3,8 @@ import Image from "next/image";
 import { Card } from "./ui/card";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { useLikeStore } from "@/store/likes-store";
+import { Heart } from "lucide-react";
 interface AlbumCardProps extends React.HTMLAttributes<HTMLDivElement> {
   imageURL: {
     link: string;
@@ -36,6 +38,9 @@ export const AlbumCard = ({
   artists,
 }: AlbumCardProps) => {
   const router = useRouter();
+  const likeType = type === "playlist" ? "playlist" : "album";
+  const isLiked = useLikeStore((state) => state.isLiked(likeType, id));
+  const toggleLike = useLikeStore((state) => state.toggleLike);
   let imgURL =
     imageURL[2].link ||
     imageURL[1].link ||
@@ -61,7 +66,7 @@ export const AlbumCard = ({
           height: `${height}px` || "250px",
           width: `${width}px` || "250px",
         }}
-        className="overflow-hidden rounded-md  "
+        className="overflow-hidden rounded-md relative"
       >
         <Image
           src={imgURL}
@@ -74,6 +79,16 @@ export const AlbumCard = ({
             aspectRatio === "portrait" ? "aspect-[3/4]" : "aspect-square"
           )}
         />
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleLike(likeType, id);
+          }}
+          aria-label={isLiked ? "Unlike" : "Like"}
+          className="absolute right-2 top-2 grid h-9 w-9 place-items-center rounded-full bg-black/50 text-white shadow-sm backdrop-blur transition hover:bg-black/70"
+        >
+          <Heart className={cn("h-4 w-4", isLiked ? "fill-rose-500 text-rose-400" : "text-white")} />
+        </button>
       </div>
       <div className="space-y-1 text-sm">
         <h3 className="font-medium  mt-2 line-clamp-1">
