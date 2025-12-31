@@ -176,8 +176,8 @@ export const Player = ({
         {/* right side */}
         <div className="flex justify-end items-center md:gap-x-2 pr-4">
           <Button
-            onClick={() => toggleLike("track", trackId)}
-            disabled={!trackId}
+            onClick={() => safeId && toggleLike("track", safeId)}
+            disabled={!safeId}
             className={cn(
               "active:scale-90 hidden sm:inline-flex transition-transform",
               isLiked && "text-rose-400"

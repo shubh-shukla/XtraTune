@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession, signIn, signOut } from "next-auth/react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { LogOut, Settings } from "lucide-react";
 import {
@@ -52,12 +53,13 @@ export function AuthButton() {
             aria-label="Account menu"
           >
             {user.image ? (
-              // Use plain img to avoid remote host allow-list issues
-              <img
+              <Image
                 src={user.image}
                 alt={user.name ?? "user"}
+                width={40}
+                height={40}
                 className="h-full w-full rounded-full object-cover"
-                referrerPolicy="no-referrer"
+                unoptimized
               />
             ) : (
               <div className="h-full w-full rounded-full bg-gradient-to-br from-orange-400 to-fuchsia-500 text-white flex items-center justify-center text-sm font-semibold">
@@ -73,11 +75,13 @@ export function AuthButton() {
         >
           <div className="px-4 py-3 flex items-center gap-3 bg-slate-800/60 border-b border-white/5">
             {user.image ? (
-              <img
+              <Image
                 src={user.image}
                 alt={user.name ?? "user"}
+                width={40}
+                height={40}
                 className="h-10 w-10 rounded-full object-cover"
-                referrerPolicy="no-referrer"
+                unoptimized
               />
             ) : (
               <div className="h-10 w-10 rounded-full bg-gradient-to-br from-orange-400 to-fuchsia-500 text-white flex items-center justify-center text-sm font-semibold">
