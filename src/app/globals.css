@@ -4,34 +4,34 @@
 
 @layer base {
   :root {
-    --background: 222 25% 9%;
-    --foreground: 210 40% 98%;
+    --background: 0 0% 98%;
+    --foreground: 222 25% 10%;
 
-    --muted: 220 20% 16%;
-    --muted-foreground: 220 15% 65%;
+    --muted: 210 20% 92%;
+    --muted-foreground: 220 15% 40%;
 
-    --popover: 222 24% 12%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 25% 10%;
 
-    --card: 222 24% 12%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 25% 10%;
 
-    --border: 220 20% 25%;
-    --input: 220 20% 25%;
+    --border: 210 16% 85%;
+    --input: 210 16% 85%;
 
-    --primary: 26 92% 61%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 26 92% 55%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 222 24% 16%;
-    --secondary-foreground: 210 40% 96%;
+    --secondary: 210 20% 94%;
+    --secondary-foreground: 222 25% 12%;
 
-    --accent: 250 70% 65%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 250 70% 60%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 52%;
+    --destructive-foreground: 0 0% 100%;
 
-    --ring: 26 92% 61%;
+    --ring: 26 92% 55%;
 
     --radius: 0.75rem;
   }
@@ -137,6 +137,15 @@ body {
   border: 1px solid rgba(255,255,255,0.06);
   background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
   box-shadow: 0 18px 48px rgba(0,0,0,0.35);
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 .glass {

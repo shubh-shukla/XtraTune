@@ -64,7 +64,7 @@ export const Player = ({
     }
   };
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || !sound) return;
     sound.play();
     setIsPlaying(true);
     const timer = setInterval(() => {
@@ -75,7 +75,7 @@ export const Player = ({
       clearInterval(timer);
       sound?.stop();
     };
-  }, [sound]);
+  }, [sound, isLoading]);
 
   return (
     <Card

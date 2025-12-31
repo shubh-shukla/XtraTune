@@ -2,7 +2,7 @@ import { Inter as FontSans } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Sidebar } from "@/components/sidebar";
 import { Header } from "@/components/header";
 import { SearchBox } from "@/components/searchBox";
@@ -24,17 +24,18 @@ export const metadata:Metadata = {
   title: "XtraTune",
   description: "A younicorn project built with NextJS ",
   manifest: "/manifest.json",
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    userScalable: false,
-  },
   authors:[
     {
       name:"Shubham Shukla",
       url:"https://github.com/shubh-shukla"
     }
   ]
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({

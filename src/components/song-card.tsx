@@ -12,9 +12,11 @@ interface SongProps extends React.HTMLAttributes<HTMLDivElement> {
   width?: number;
   url: string;
   id: string;
-  artists?: {
-    name: string;
-  }[];
+  artists?:
+    | {
+        name: string;
+      }[]
+    | string;
   type: string;
   singer?: string;
   aspectRatio?: "portrait" | "square";

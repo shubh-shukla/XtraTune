@@ -64,13 +64,13 @@ export const Sidebar = () => {
         <h2 className="text-muted-foreground space-y-3 ">Playlists</h2>
         <div className="space-y-4 font-inter text-secondary-foreground text-sm ">
           <Link href="/comingsoon" className="block">
-            Let's Play - Arijit Singh
+            Let&apos;s Play - Arijit Singh
           </Link>
           <Link href="/comingsoon" className="block">
             2000s Duets
           </Link>
           <Link href="/comingsoon" className="block">
-            Let's Play - Kumar Sanu
+            Let&apos;s Play - Kumar Sanu
           </Link>
           <Link href="/comingsoon" className="block">
             Best Of Indipop

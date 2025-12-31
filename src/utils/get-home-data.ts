@@ -5,7 +5,25 @@ export const gethomepageData = async () => {
   try {
     const { data } = await music.get(`/search?query=Top%20Hits`);
 
-    const toImage = (img: any) => ({ ...img, link: img.url });
+    type HomePlaylist = {
+      id: string;
+      userId: string;
+      title: string;
+      subtitle: string;
+      type: string;
+      image: { quality: string; link: string }[];
+      url: string;
+      songCount: string;
+      firstname: string;
+      followerCount: string;
+      lastUpdated: string;
+      explicitContent: string;
+    };
+
+    const toImage = (img: any) => ({
+      quality: img?.quality ?? "",
+      link: img?.link ?? img?.url ?? "/playlist-placeholder.webp",
+    });
     const toArtistsArray = (value: any) => {
       if (Array.isArray(value)) return value;
       if (typeof value === "string")
@@ -54,7 +72,7 @@ export const gethomepageData = async () => {
     });
 
     const albums = data.data?.albums?.results?.map(toAlbum) ?? [];
-    const playlists =
+    const playlists: HomePlaylist[] =
       data.data?.playlists?.results?.map((p: any) => ({
         id: p.id,
         userId: "",
@@ -78,7 +96,7 @@ export const gethomepageData = async () => {
       data: {
         albums,
         playlists,
-        charts: playlists.map((p) => ({
+        charts: playlists.map((p: HomePlaylist) => ({
           ...p,
           subtitle: p.subtitle ?? "",
           firstname: p.firstname ?? "",

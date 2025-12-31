@@ -64,15 +64,15 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
         <p className="text-muted-foreground text-lg max-w-3xl">{cat.blurb}</p>
       </header>
 
-      <nav className="sticky top-16 z-20 backdrop-blur supports-[backdrop-filter]:bg-background/70 bg-background/90 border border-white/5 rounded-2xl p-3 flex gap-2 overflow-x-auto">
+      <nav className="sticky top-16 z-20 backdrop-blur supports-[backdrop-filter]:bg-background/70 bg-card/90 border border-border rounded-2xl p-3 flex gap-2 overflow-x-auto no-scrollbar">
         {Object.entries(categories).map(([key, meta]) => (
           <Link
             key={key}
             href={`/categories/${key}`}
             className={`flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition ${
               key === params.slug
-                ? "border-orange-400 text-orange-400"
-                : "border-white/10 hover:border-orange-400 hover:text-orange-400"
+                ? "border-orange-400 text-orange-500 bg-secondary/70"
+                : "border-border/70 text-foreground bg-secondary/60 hover:border-orange-400 hover:text-orange-500"
             }`}
           >
             <span>{meta.title}</span>

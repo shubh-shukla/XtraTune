@@ -55,9 +55,30 @@ const categories = [
   },
 ];
 
-const mapImage = (image?: { link?: string; url?: string }[]) => {
+const mapImage = (image?: { link?: string; url?: string }[]): { link: string }[] => {
   if (!image) return [{ link: "/playlist-placeholder.webp" }];
   return image.map((img) => ({ link: img?.link ?? img?.url ?? "/playlist-placeholder.webp" }));
+};
+
+type PreviewPlaylist = {
+  id: string;
+  title: string;
+  image: { link: string }[];
+  type: string;
+  url: string;
+  songCount: string;
+  language: string;
+  artists: any[];
+};
+
+type PreviewSong = {
+  id: string;
+  title: string;
+  image: { link: string }[];
+  type: string;
+  url: string;
+  singers: string;
+  artists: any[];
 };
 
 const mapArtists = (value: any) => {
@@ -102,7 +123,10 @@ async function fetchPreviewSongs(query: string) {
 }
 
 export default async function CategoriesPage() {
-  const previews = await Promise.all(
+  const previews: (typeof categories[number] & {
+    playlists: PreviewPlaylist[];
+    songs: PreviewSong[];
+  })[] = await Promise.all(
     categories.map(async (cat) => ({
       ...cat,
       playlists: await fetchPreviewPlaylists(cat.query),
@@ -119,12 +143,12 @@ export default async function CategoriesPage() {
           Handpicked playlists and albums for every mood, moment, and mission.
         </p>
       </header>
-      <nav className="sticky top-16 z-20 backdrop-blur supports-[backdrop-filter]:bg-background/70 bg-background/90 border border-white/5 rounded-2xl p-3 flex gap-3 overflow-x-auto">
+      <nav className="sticky top-16 z-20 backdrop-blur supports-[backdrop-filter]:bg-background/70 bg-card/90 border border-border rounded-2xl p-3 flex gap-3 overflow-x-auto no-scrollbar">
         {categories.map((cat) => (
           <Link
             key={cat.key}
             href={`/categories/${cat.key}`}
-            className="flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm font-medium hover:border-orange-400 hover:text-orange-400 transition"
+            className="flex items-center gap-2 rounded-full border border-border/70 bg-secondary/70 px-4 py-2 text-sm font-medium text-foreground hover:border-orange-400 hover:text-orange-500 transition dark:bg-white/5"
           >
             <span>{cat.title}</span>
           </Link>
@@ -136,19 +160,19 @@ export default async function CategoriesPage() {
           <Link
             key={cat.key}
             href={`/categories/${cat.key}`}
-            className={`group relative overflow-hidden rounded-2xl border border-white/5 bg-gradient-to-br ${cat.gradient} p-5 transition hover:scale-[1.01] hover:shadow-lg`}
+            className={`group relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br ${cat.gradient} p-5 transition hover:scale-[1.01] hover:shadow-lg`}
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-white/80">Category</p>
-                <h3 className="text-xl font-semibold text-white drop-shadow-sm">{cat.title}</h3>
-                <p className="mt-1 text-sm text-white/80 line-clamp-3">{cat.blurb}</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Category</p>
+                <h3 className="text-xl font-semibold text-foreground drop-shadow-sm">{cat.title}</h3>
+                <p className="mt-1 text-sm text-muted-foreground line-clamp-3">{cat.blurb}</p>
               </div>
-              <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white shadow-sm">Open</span>
+              <span className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-foreground shadow-sm">Open</span>
             </div>
             <div className="mt-6 flex gap-2">
-              <span className="rounded-full bg-white/15 px-3 py-1 text-xs text-white/80">New page</span>
-              <span className="rounded-full bg-white/15 px-3 py-1 text-xs text-white/80">Endless scroll</span>
+              <span className="rounded-full bg-secondary px-3 py-1 text-xs text-muted-foreground">New page</span>
+              <span className="rounded-full bg-secondary px-3 py-1 text-xs text-muted-foreground">Endless scroll</span>
             </div>
           </Link>
         ))}
@@ -171,8 +195,8 @@ export default async function CategoriesPage() {
           </div>
           <Separator />
           <div className="flex flex-col gap-3">
-            <div className="flex gap-3 overflow-x-auto pb-2">
-              {cat.playlists.map((item) => (
+            <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+              {cat.playlists.map((item: PreviewPlaylist) => (
                 <AlbumCard
                   key={item.id}
                   id={item.id}
@@ -193,8 +217,8 @@ export default async function CategoriesPage() {
                 <p className="text-muted-foreground">No playlists yet.</p>
               )}
             </div>
-            <div className="flex gap-3 overflow-x-auto pb-2">
-              {cat.songs.map((song) => (
+            <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+              {cat.songs.map((song: PreviewSong) => (
                 <SongCard
                   key={song.id}
                   id={song.id}
