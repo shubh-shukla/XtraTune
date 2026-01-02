@@ -83,7 +83,6 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="font-cal text-2xl">Playlists</h2>
-          <p className="text-sm text-muted-foreground">Auto-loads more as you scroll</p>
         </div>
         <CategoryFeed query={cat.query} />
       </section>
