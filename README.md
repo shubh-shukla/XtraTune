@@ -1,35 +1,114 @@
+# 🎧 XtraTune
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+> Because silence is overrated.
 
-## Getting Started
+XtraTune is a modern music streaming web app built with **Next.js + TypeScript + TailwindCSS**.  
+It focuses on performance, clean UI, and a smooth developer experience.
 
-First, run the development server:
+Minimal. Fast. Functional.
+
+---
+
+## ⚡ Why XtraTune?
+
+I built XtraTune to experiment with:
+
+- Modern React architecture (Next.js)
+- Scalable component structure
+- Type-safe frontend development
+- Clean UI patterns
+- Optimized rendering & performance
+
+It’s not just a music UI — it’s a frontend engineering playground.
+
+---
+
+## 🧩 Tech Stack
+
+- **Next.js** – SSR/SSG ready React framework
+- **TypeScript** – Type safety = fewer runtime surprises
+- **TailwindCSS** – Utility-first styling
+- **pnpm** – Fast & efficient package management
+- **ESLint** – Clean, consistent code
+
+---
+
+## 💻 Engineering Highlights
+
+- Modular and reusable component design
+- Scalable folder structure
+- Responsive layout system
+- Clean state management patterns
+- Production-ready build configuration
+
+---
+
+## 🛠 Setup
+
+Clone the repo:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+git clone https://github.com/shubh-shukla/XtraTune.git
+cd XtraTune
+```
+
+Install dependencies:
+
+```bash
+pnpm install
+```
+
+Run locally:
+
+```bash
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+App runs at:
+http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## 🏗 Production Build
 
-## Learn More
+```bash
+pnpm build
+pnpm start
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📂 Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+```
+src/
+  components/     → UI building blocks
+  pages/ or app/  → Routing layer
+  styles/         → Global styles
+  utils/          → Helper functions
+public/           → Static assets
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🤔 Future Experiments
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- Playlist system
+- Audio controls enhancement
+- User authentication
+- Dark mode
+- Performance metrics dashboard
+- Backend integration for real streaming
+
+---
+
+## 🧑‍💻 About the Author
+
+Built by **Shubham Shukla**  
+
+---
+
+## ⭐ If You Like It
+
+Give it a star.  
+Or fork it and make it louder.
