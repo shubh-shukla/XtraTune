@@ -13,13 +13,19 @@ export async function GET(req: Request) {
 
   try {
     const { data } = await music.get(
-      `/search/playlists?query=${encodeURIComponent(query)}&page=${page}&limit=${limit}`
+      `/search/playlists?query=${encodeURIComponent(query)}&page=${page}&limit=${limit}`,
     );
     const results: any[] = data?.data?.results ?? [];
+    const toImg = (img: any) => ({
+      quality: img?.quality ?? "",
+      link: img?.link ?? img?.url ?? "",
+      url: img?.link ?? img?.url ?? "",
+    });
     const mapped = results.map((p) => ({
       id: p.id,
+      name: p.name ?? p.title ?? "Untitled",
       title: p.name ?? p.title ?? "Untitled",
-      image: p.image ?? [],
+      image: (p.image ?? []).map(toImg),
       type: p.type ?? "playlist",
       url: p.url ?? "",
       songCount: String(p.songCount ?? ""),

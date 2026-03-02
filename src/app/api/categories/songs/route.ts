@@ -13,17 +13,38 @@ export async function GET(req: Request) {
 
   try {
     const { data } = await music.get(
-      `/search/songs?query=${encodeURIComponent(query)}&page=${page}&limit=${limit}`
+      `/search/songs?query=${encodeURIComponent(query)}&page=${page}&limit=${limit}`,
     );
     const results: any[] = data?.data?.results ?? [];
+    const toImg = (img: any) => ({
+      quality: img?.quality ?? "",
+      link: img?.link ?? img?.url ?? "",
+      url: img?.link ?? img?.url ?? "",
+    });
+    const toDl = (dl: any) => ({
+      quality: dl?.quality ?? "",
+      link: dl?.link ?? dl?.url ?? "",
+      url: dl?.link ?? dl?.url ?? "",
+    });
     const mapped = results.map((s) => ({
       id: s.id,
+      name: s.name ?? s.title ?? "Untitled",
       title: s.name ?? s.title ?? "Untitled",
-      image: s.image ?? [],
       type: s.type ?? "song",
+      year: s.year ?? "",
+      duration: s.duration ?? 0,
+      language: s.language ?? "",
       url: s.url ?? "",
-      singers: s.singers ?? s.primaryArtists ?? "",
+      image: (s.image ?? []).map(toImg),
+      downloadUrl: (s.downloadUrl ?? []).map(toDl),
+      primaryArtists:
+        s.artists?.primary?.map((a: any) => a.name).join(", ") ??
+        (typeof s.primaryArtists === "string" ? s.primaryArtists : ""),
       artists: s.artists ?? s.primaryArtists ?? s.singers ?? "",
+      singers: s.singers ?? "",
+      album: s.album ?? {},
+      hasLyrics: s.hasLyrics ?? "",
+      playCount: s.playCount ?? "",
     }));
 
     return NextResponse.json({ data: mapped, page, limit });
