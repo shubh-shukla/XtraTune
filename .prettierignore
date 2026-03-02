@@ -1,0 +1,6 @@
+node_modules
+.next
+out
+build
+pnpm-lock.yaml
+public/sw.js

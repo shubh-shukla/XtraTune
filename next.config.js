@@ -1,14 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images:{
-    unoptimized: true,
-    domains: ['c.saavncdn.com','avatars.githubusercontent.com','lh3.googleusercontent.com']
+    images: {
+        remotePatterns: [
+            { protocol: 'https', hostname: 'c.saavncdn.com' },
+            { protocol: 'https', hostname: 'www.jiosaavn.com' },
+            { protocol: 'https', hostname: 'avatars.githubusercontent.com' },
+            { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
+        ],
     },
-    
-      swcMinify: true,
-      compiler:{
-        removeConsole: true,
-      }
+    compiler: {
+        removeConsole: process.env.NODE_ENV === 'production',
+    },
 }
 
 module.exports = nextConfig
