@@ -1,17 +1,13 @@
 import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
 import { search } from "./fetcher";
 import { Albums } from "./sections/albums";
 import { Artist } from "./sections/artists";
 import { Playlists } from "./sections/playlist";
 import { Songs } from "./sections/songs";
 import { TopQuery } from "./sections/top-results";
-import { buttonVariants } from "@/components/ui/button";
 
-export default async function searchResults({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function searchResults({ params }: { params: { slug: string } }) {
   const data = await search(params.slug);
   if (
     data?.data.albums.results.length === 0 &&

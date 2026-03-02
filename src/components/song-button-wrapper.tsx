@@ -1,8 +1,5 @@
-"use client"
+"use client";
 
-const SongWrapper=()=>{
-    return(
-        <>
-        </>
-    )
-}
+const _SongWrapper = () => {
+  return <></>;
+};

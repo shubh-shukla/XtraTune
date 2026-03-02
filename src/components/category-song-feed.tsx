@@ -32,13 +32,19 @@ function flatten<T>(pages: T[][]) {
 export function CategorySongFeed({ query }: { query: string }) {
   const observerRef = useRef<HTMLDivElement | null>(null);
 
-  const { data, size, setSize, isValidating } = useSWRInfinite(
-    (index) => `/api/categories/songs?query=${encodeURIComponent(query)}&page=${index}&limit=${PAGE_SIZE}`,
+  const {
+    data,
+    size: _size,
+    setSize,
+    isValidating,
+  } = useSWRInfinite(
+    (index) =>
+      `/api/categories/songs?query=${encodeURIComponent(query)}&page=${index}&limit=${PAGE_SIZE}`,
     fetcher,
     {
       revalidateFirstPage: false,
       revalidateOnFocus: false,
-    }
+    },
   );
 
   const items = useMemo(() => {
@@ -53,8 +59,8 @@ export function CategorySongFeed({ query }: { query: string }) {
           url: s.url,
           singers: s.singers,
           artists: mapArtists(s.artists),
-        }))
-      )
+        })),
+      ),
     );
   }, [data]);
 
@@ -71,7 +77,7 @@ export function CategorySongFeed({ query }: { query: string }) {
           setSize((prev) => prev + 1);
         }
       },
-      { rootMargin: "600px" }
+      { rootMargin: "600px" },
     );
     observer.observe(sentinel);
     return () => observer.disconnect();

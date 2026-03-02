@@ -1,23 +1,21 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { useTheme } from "next-themes"
-
-import { Icons } from "@/components/icons"
-
+import { useTheme } from "next-themes";
+import * as React from "react";
+import { Icons } from "@/components/icons";
+import { Button } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu"
-import { Button } from "./ui/button"
+} from "./ui/dropdown-menu";
 
 export function ModeToggle() {
-  const { setTheme } = useTheme()
+  const { setTheme } = useTheme();
 
   return (
-    <DropdownMenu  >
+    <DropdownMenu>
       <DropdownMenuTrigger asChild className="relative">
         <Button variant="ghost" className="w-9 px-0">
           <Icons.sun className="h-[1.5rem] w-[1.5rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -40,5 +38,5 @@ export function ModeToggle() {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

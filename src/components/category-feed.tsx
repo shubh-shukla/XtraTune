@@ -33,13 +33,19 @@ function flatten<T>(pages: T[][]) {
 export function CategoryFeed({ query }: { query: string }) {
   const observerRef = useRef<HTMLDivElement | null>(null);
 
-  const { data, size, setSize, isValidating } = useSWRInfinite(
-    (index) => `/api/categories/playlists?query=${encodeURIComponent(query)}&page=${index}&limit=${PAGE_SIZE}`,
+  const {
+    data,
+    size: _size,
+    setSize,
+    isValidating,
+  } = useSWRInfinite(
+    (index) =>
+      `/api/categories/playlists?query=${encodeURIComponent(query)}&page=${index}&limit=${PAGE_SIZE}`,
     fetcher,
     {
       revalidateFirstPage: false,
       revalidateOnFocus: false,
-    }
+    },
   );
 
   const items = useMemo(() => {
@@ -55,13 +61,13 @@ export function CategoryFeed({ query }: { query: string }) {
           songCount: p.songCount,
           language: p.language,
           artists: mapArtists(p.artists),
-        }))
-      )
+        })),
+      ),
     );
   }, [data]);
 
   const isLoading = !data;
-  const pageHasData = (pageIndex: number) => Boolean(data?.[pageIndex]?.data?.length);
+  const _pageHasData = (pageIndex: number) => Boolean(data?.[pageIndex]?.data?.length);
   const reachedEnd = data && data[data.length - 1]?.data?.length < PAGE_SIZE;
 
   // Intersection observer to auto-load more near end of list
@@ -75,7 +81,7 @@ export function CategoryFeed({ query }: { query: string }) {
           setSize((prev) => prev + 1);
         }
       },
-      { rootMargin: "600px" }
+      { rootMargin: "600px" },
     );
     observer.observe(sentinel);
     return () => observer.disconnect();

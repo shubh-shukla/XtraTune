@@ -5,7 +5,6 @@ import {
   Laptop,
   Moon,
   SunMedium,
-  Music2,
   Music4,
   Home,
   LayoutGrid,
@@ -37,9 +36,9 @@ export const Icons = {
   prev: SkipBack,
   like: Heart,
   whishlist: PlusCircle,
-  loader:Loader2,
-  highVolume:Volume2,
-  lowVolume:Volume1,
-  mute:VolumeX,
-  download:Download
+  loader: Loader2,
+  highVolume: Volume2,
+  lowVolume: Volume1,
+  mute: VolumeX,
+  download: Download,
 };
