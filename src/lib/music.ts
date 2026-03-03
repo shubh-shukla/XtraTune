@@ -1,11 +1,19 @@
 import "server-only";
-import axios from "axios";
 
-const URL = process.env.SCRAPER_URL;
-if (!URL) throw new Error("No scraper url provided");
+const BASE_URL = process.env.SCRAPER_URL;
+if (!BASE_URL) throw new Error("No scraper url provided");
 
-const music = axios.create({
-    baseURL: URL,
-});
+/**
+ * Lightweight fetch wrapper that mirrors the axios instance interface
+ * used throughout the codebase (`music.get(path)` → `{ data }`).
+ */
+const music = {
+  async get(path: string) {
+    const res = await fetch(`${BASE_URL}${path}`, { next: { revalidate: 300 } });
+    if (!res.ok) throw new Error(`music.get ${path} failed: ${res.status}`);
+    const data = await res.json();
+    return { data };
+  },
+};
 
 export { music };
