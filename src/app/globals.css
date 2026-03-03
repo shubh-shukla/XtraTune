@@ -4,26 +4,26 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
-    --foreground: 222 25% 10%;
+    --background: 0 0% 96%;
+    --foreground: 224 20% 14%;
 
-    --muted: 210 20% 92%;
-    --muted-foreground: 220 15% 40%;
+    --muted: 220 14% 92%;
+    --muted-foreground: 220 10% 46%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 25% 10%;
+    --popover-foreground: 224 20% 14%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 25% 10%;
+    --card-foreground: 224 20% 14%;
 
-    --border: 210 16% 85%;
-    --input: 210 16% 85%;
+    --border: 220 13% 90%;
+    --input: 220 13% 90%;
 
     --primary: 26 92% 55%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 20% 94%;
-    --secondary-foreground: 222 25% 12%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 224 20% 14%;
 
     --accent: 250 70% 60%;
     --accent-foreground: 0 0% 100%;
@@ -34,6 +34,8 @@
     --ring: 26 92% 55%;
 
     --radius: 0.75rem;
+
+    --sidebar: 0 0% 100%;
   }
 
   .dark {
@@ -43,7 +45,7 @@
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: 224 71% 8%;
     --popover-foreground: 210 40% 98%;
 
     --card: 222.2 84% 4.9%;
@@ -52,19 +54,21 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 26 92% 55%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 250 60% 55%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 85.7% 97.3%;
+    --destructive: 0 72% 52%;
+    --destructive-foreground: 0 0% 100%;
 
-    --ring: 217.2 32.6% 17.5%;
+    --ring: 26 92% 55%;
+
+    --sidebar: 222 50% 10%;
   }
 }
 
@@ -77,17 +81,34 @@
   }
 }
 
-*{
+* {
   -webkit-tap-highlight-color: transparent;
 }
 body {
   overscroll-behavior: none;
-  background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.06), transparent 30%),
-    radial-gradient(circle at 80% 0%, rgba(255,191,116,0.07), transparent 32%),
-    radial-gradient(circle at 50% 80%, rgba(132,122,255,0.08), transparent 32%),
+  background: hsl(var(--background));
+}
+.dark body,
+body:where(.dark *) {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.06), transparent 30%),
+    radial-gradient(circle at 80% 0%, rgba(255, 191, 116, 0.07), transparent 32%),
+    radial-gradient(circle at 50% 80%, rgba(132, 122, 255, 0.08), transparent 32%),
     hsl(var(--background));
 }
-.main-layout{
+
+/* ── Sidebar surface ── */
+.sidebar-surface {
+  background: hsl(var(--sidebar));
+  border-right: 1px solid hsl(var(--border));
+  box-shadow: 1px 0 8px rgba(0, 0, 0, 0.04);
+}
+.dark .sidebar-surface {
+  background: linear-gradient(180deg, hsl(var(--sidebar)) 0%, hsl(222 60% 7%) 100%);
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 1px 0 12px rgba(0, 0, 0, 0.3);
+}
+.main-layout {
   display: flex;
   flex-direction: column;
 }
@@ -117,12 +138,12 @@ body {
 .SliderThumb[data-orientation="vertical"] {
   transform: translateX(-30%);
 }
-.player .SliderThumb{
+.player .SliderThumb {
   width: 8px !important;
   height: 8px !important;
 }
-.backdrop-blur-sm{
-  backdrop-filter: unset!important;
+.backdrop-blur-sm {
+  backdrop-filter: unset !important;
 }
 
 .page-shell {
@@ -134,9 +155,14 @@ body {
 
 .section-card {
   border-radius: 1.5rem;
-  border: 1px solid rgba(255,255,255,0.06);
-  background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-  box-shadow: 0 18px 48px rgba(0,0,0,0.35);
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+.dark .section-card {
+  border-color: rgba(255, 255, 255, 0.06);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
 }
 
 .no-scrollbar {
@@ -150,7 +176,10 @@ body {
 
 .glass {
   backdrop-filter: blur(16px);
-  background: rgba(255,255,255,0.04);
+  background: rgba(0, 0, 0, 0.02);
+}
+.dark .glass {
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .text-gradient {
