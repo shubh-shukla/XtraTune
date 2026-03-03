@@ -1,7 +1,7 @@
+import { type Metadata } from "next";
+import Link from "next/link";
 import { CategoryFeed } from "@/components/category-feed";
 import { CategorySongFeed } from "@/components/category-song-feed";
-import { Metadata } from "next";
-import Link from "next/link";
 
 const categories = {
   romantic: {
@@ -36,7 +36,11 @@ const categories = {
   },
 } as const;
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
   const cat = categories[params.slug as keyof typeof categories];
   return {
     title: cat ? `${cat.title} | Categories` : "Categories",
@@ -64,21 +68,23 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
         <p className="text-muted-foreground text-lg max-w-3xl">{cat.blurb}</p>
       </header>
 
-      <nav className="sticky top-16 z-20 backdrop-blur supports-[backdrop-filter]:bg-background/70 bg-card/90 border border-border rounded-2xl p-3 flex gap-2 overflow-x-auto no-scrollbar">
-        {Object.entries(categories).map(([key, meta]) => (
-          <Link
-            key={key}
-            href={`/categories/${key}`}
-            className={`flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition ${
-              key === params.slug
-                ? "border-orange-400 text-orange-500 bg-secondary/70"
-                : "border-border/70 text-foreground bg-secondary/60 hover:border-orange-400 hover:text-orange-500"
-            }`}
-          >
-            <span>{meta.title}</span>
-          </Link>
-        ))}
-      </nav>
+      <div className="sticky top-0 z-20 bg-background/90 dark:bg-background/80 backdrop-blur-lg shadow-sm dark:shadow-none pt-4 pb-2 -mt-4">
+        <nav className="bg-muted/50 border border-border rounded-2xl p-3 flex gap-2 overflow-x-auto no-scrollbar">
+          {Object.entries(categories).map(([key, meta]) => (
+            <Link
+              key={key}
+              href={`/categories/${key}`}
+              className={`flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition ${
+                key === params.slug
+                  ? "border-orange-400 text-orange-500 bg-secondary/70"
+                  : "border-border/70 text-foreground bg-secondary/60 hover:border-orange-400 hover:text-orange-500"
+              }`}
+            >
+              <span>{meta.title}</span>
+            </Link>
+          ))}
+        </nav>
+      </div>
 
       <section className="space-y-4">
         <div className="flex items-center justify-between">

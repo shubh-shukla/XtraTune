@@ -1,9 +1,9 @@
+import { type Metadata } from "next";
 import Link from "next/link";
-import { Metadata } from "next";
-import { music } from "@/lib/music";
 import { AlbumCard } from "@/components/album-card";
 import { SongCard } from "@/components/song-card";
 import { Separator } from "@/components/ui/separator";
+import { music } from "@/lib/music";
 
 export const metadata: Metadata = {
   title: "Browse Categories | XtraTune",
@@ -93,7 +93,7 @@ const mapArtists = (value: any) => {
 
 async function fetchPreviewPlaylists(query: string) {
   const { data } = await music.get(
-    `/search/playlists?query=${encodeURIComponent(query)}&page=0&limit=8`
+    `/search/playlists?query=${encodeURIComponent(query)}&page=0&limit=8`,
   );
   return (data?.data?.results ?? []).map((p: any) => ({
     id: p.id,
@@ -109,7 +109,7 @@ async function fetchPreviewPlaylists(query: string) {
 
 async function fetchPreviewSongs(query: string) {
   const { data } = await music.get(
-    `/search/songs?query=${encodeURIComponent(query)}&page=0&limit=8`
+    `/search/songs?query=${encodeURIComponent(query)}&page=0&limit=8`,
   );
   return (data?.data?.results ?? []).map((s: any) => ({
     id: s.id,
@@ -123,7 +123,7 @@ async function fetchPreviewSongs(query: string) {
 }
 
 export default async function CategoriesPage() {
-  const previews: (typeof categories[number] & {
+  const previews: ((typeof categories)[number] & {
     playlists: PreviewPlaylist[];
     songs: PreviewSong[];
   })[] = await Promise.all(
@@ -131,7 +131,7 @@ export default async function CategoriesPage() {
       ...cat,
       playlists: await fetchPreviewPlaylists(cat.query),
       songs: await fetchPreviewSongs(cat.query),
-    }))
+    })),
   );
 
   return (
@@ -143,17 +143,19 @@ export default async function CategoriesPage() {
           Handpicked playlists and albums for every mood, moment, and mission.
         </p>
       </header>
-      <nav className="sticky top-16 z-20 backdrop-blur supports-[backdrop-filter]:bg-background/70 bg-card/90 border border-border rounded-2xl p-3 flex gap-3 overflow-x-auto no-scrollbar">
-        {categories.map((cat) => (
-          <Link
-            key={cat.key}
-            href={`/categories/${cat.key}`}
-            className="flex items-center gap-2 rounded-full border border-border/70 bg-secondary/70 px-4 py-2 text-sm font-medium text-foreground hover:border-orange-400 hover:text-orange-500 transition dark:bg-white/5"
-          >
-            <span>{cat.title}</span>
-          </Link>
-        ))}
-      </nav>
+      <div className="sticky top-0 z-20 bg-background/90 dark:bg-background/80 backdrop-blur-lg shadow-sm dark:shadow-none pt-4 pb-2 -mt-4">
+        <nav className="bg-muted/50 border border-border rounded-2xl p-3 flex gap-3 overflow-x-auto no-scrollbar">
+          {categories.map((cat) => (
+            <Link
+              key={cat.key}
+              href={`/categories/${cat.key}`}
+              className="flex items-center gap-2 rounded-full border border-border/70 bg-secondary/70 px-4 py-2 text-sm font-medium text-foreground hover:border-orange-400 hover:text-orange-500 transition dark:bg-white/5"
+            >
+              <span>{cat.title}</span>
+            </Link>
+          ))}
+        </nav>
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {previews.map((cat) => (
@@ -165,14 +167,22 @@ export default async function CategoriesPage() {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Category</p>
-                <h3 className="text-xl font-semibold text-foreground drop-shadow-sm">{cat.title}</h3>
+                <h3 className="text-xl font-semibold text-foreground drop-shadow-sm">
+                  {cat.title}
+                </h3>
                 <p className="mt-1 text-sm text-muted-foreground line-clamp-3">{cat.blurb}</p>
               </div>
-              <span className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-foreground shadow-sm">Open</span>
+              <span className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-foreground shadow-sm">
+                Open
+              </span>
             </div>
             <div className="mt-6 flex gap-2">
-              <span className="rounded-full bg-secondary px-3 py-1 text-xs text-muted-foreground">New page</span>
-              <span className="rounded-full bg-secondary px-3 py-1 text-xs text-muted-foreground">Endless scroll</span>
+              <span className="rounded-full bg-secondary px-3 py-1 text-xs text-muted-foreground">
+                New page
+              </span>
+              <span className="rounded-full bg-secondary px-3 py-1 text-xs text-muted-foreground">
+                Endless scroll
+              </span>
             </div>
           </Link>
         ))}
@@ -234,9 +244,7 @@ export default async function CategoriesPage() {
                   className="w-[180px]"
                 />
               ))}
-              {cat.songs.length === 0 && (
-                <p className="text-muted-foreground">No songs yet.</p>
-              )}
+              {cat.songs.length === 0 && <p className="text-muted-foreground">No songs yet.</p>}
             </div>
           </div>
         </section>
