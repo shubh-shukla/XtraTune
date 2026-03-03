@@ -1,21 +1,18 @@
 import { AlbumCard } from "@/components/album-card";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { HorizontalScroll } from "@/components/ui/horizontal-scroll";
 import { Separator } from "@/components/ui/separator";
-import { gethomepageData } from "@/utils/get-home-data";
+import { type Playlist as PlaylistType } from "@/typings/homepage";
 
-export const Playlists = async () => {
-  const data = await gethomepageData();
+export const Playlists = ({ playlists }: { playlists: PlaylistType[] }) => {
   return (
     <section className="space-y-4 border-none">
       <div className="mt-6 space-y-1">
-        <h2 className="text-3xl font-cal font-semibold tracking-wide ">
-          Playlist
-        </h2>
+        <h2 className="text-3xl font-cal font-semibold tracking-wide ">Playlist</h2>
       </div>
       <Separator className="my-4" />
-      <ScrollArea>
-        <div className=" flex gap-4">
-          {data?.data.playlists.map((playlist) => (
+      <HorizontalScroll>
+        <div className="flex gap-4 pr-8">
+          {playlists.map((playlist) => (
             <AlbumCard
               key={playlist.id}
               id={playlist.id}
@@ -31,8 +28,7 @@ export const Playlists = async () => {
             />
           ))}
         </div>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
+      </HorizontalScroll>
     </section>
   );
 };

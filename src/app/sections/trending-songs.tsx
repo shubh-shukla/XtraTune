@@ -1,36 +1,22 @@
-// TODO : implement albums and playlist features
-//  FIXME: check for memory leaks
 import { AlbumCard } from "@/components/album-card";
 import { SongCard } from "@/components/song-card";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { HorizontalScroll } from "@/components/ui/horizontal-scroll";
 import { Separator } from "@/components/ui/separator";
-import { Album3 as Album, Song } from "@/typings/homepage";
-import { gethomepageData } from "@/utils/get-home-data";
+import { type Album3 as Album, type Song } from "@/typings/homepage";
 
-export const TrendingSongs = async () => {
-  const data = await gethomepageData();
-  let list: (Song | Album)[] = [];
-  if (data?.data.trending.songs) {
-    list = [...data?.data.trending.songs];
-  }
-  if (data?.data.trending.albums) {
-    list = [...list, ...data?.data.trending.albums];
-  }
-
-  list.sort(() => Math.random() - 0.5);
+export const TrendingSongs = ({ songs, albums }: { songs: Song[]; albums: Album[] }) => {
   return (
-    <section className="space-y-4 border-none">
-      <div className="mt-6 space-y-1">
-        <h2 className="text-3xl font-cal font-semibold tracking-wide ">
-          Trending
-        </h2>
-      </div>
-      <Separator className="my-4" />
-      <ScrollArea>
-        <div className=" flex gap-4  ">
-          {list.map((item) => {
-            if (item.type === "song") {
-              return (
+    <>
+      {/* ── Trending Songs ─────────────────────────── */}
+      {songs.length > 0 && (
+        <section className="space-y-4 border-none">
+          <div className="mt-6 space-y-1">
+            <h2 className="text-3xl font-cal font-semibold tracking-wide">Trending Songs</h2>
+          </div>
+          <Separator className="my-4" />
+          <HorizontalScroll>
+            <div className="flex gap-4 pr-8">
+              {songs.map((item) => (
                 <SongCard
                   key={item.id}
                   id={item.id}
@@ -40,9 +26,22 @@ export const TrendingSongs = async () => {
                   url={item.url}
                   artists={item.primaryArtists}
                 />
-              );
-            } else if (item.type === "album") {
-              return (
+              ))}
+            </div>
+          </HorizontalScroll>
+        </section>
+      )}
+
+      {/* ── Trending Albums ────────────────────────── */}
+      {albums.length > 0 && (
+        <section className="space-y-4 border-none">
+          <div className="mt-6 space-y-1">
+            <h2 className="text-3xl font-cal font-semibold tracking-wide">Trending Albums</h2>
+          </div>
+          <Separator className="my-4" />
+          <HorizontalScroll>
+            <div className="flex gap-4 pr-8">
+              {albums.map((item) => (
                 <AlbumCard
                   key={item.id}
                   id={item.id}
@@ -50,14 +49,16 @@ export const TrendingSongs = async () => {
                   title={item.name}
                   type={item.type}
                   url={item.url}
-                  songCount={(item as Album).songCount}
+                  songCount={item.songCount}
+                  aspectRatio="portrait"
+                  width={250}
+                  height={330}
                 />
-              );
-            }
-          })}
-        </div>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
-    </section>
+              ))}
+            </div>
+          </HorizontalScroll>
+        </section>
+      )}
+    </>
   );
 };
