@@ -1,12 +1,11 @@
-import { AlbumPageCard } from "@/components/album-page-card";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { music } from "@/lib/music";
 import Image from "next/image";
 import { Balancer } from "react-wrap-balancer";
+import { ArtistTabs } from "@/components/artist-tabs";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { music } from "@/lib/music";
+import { type ArtistDetails } from "@/typings/artist-details";
+import { type ArtistSongs } from "@/typings/artist-songs";
 import { AlbumPlayBtn } from "./album-play-btn";
-import { ArtistDetails } from "@/typings/artist-details";
-import { ArtistSongs } from "@/typings/artist-songs";
-import axios from "axios";
 
 const getArtistData = async (slug: string) => {
   const id = slug.split("/")[0];
@@ -23,7 +22,7 @@ const getArtistData = async (slug: string) => {
       downloadUrl: song.downloadUrl?.map(toDownload) ?? [],
     });
 
-    const [detailRes, songsRes] = await axios.all([
+    const [detailRes, songsRes] = await Promise.all([
       music.get(`/artists/${id}`),
       music.get(`/artists/${id}/songs?page=0&limit=50`),
     ]);
@@ -48,8 +47,7 @@ const getArtistData = async (slug: string) => {
     const artistSongs: ArtistSongs = {
       total: songsRes.data?.data?.total ?? 0,
       lastPage:
-        (songsRes.data?.data?.songs?.length ?? 0) <
-        (Number(songsRes.data?.data?.limit ?? 50)),
+        (songsRes.data?.data?.songs?.length ?? 0) < Number(songsRes.data?.data?.limit ?? 50),
       results: songsRes.data?.data?.songs?.map(toSong) ?? [],
     };
 
@@ -57,7 +55,7 @@ const getArtistData = async (slug: string) => {
       artistDetail,
       artistSongs,
     };
-  } catch (e) {
+  } catch (_e) {
     return null;
   }
 };
@@ -69,11 +67,17 @@ export default async function Page({ params }: { params: { slug: string } }) {
   } | null;
   try {
     album = await getArtistData(params.slug);
-  } catch (error) {
-    console.log(error);
+  } catch (_error) {
+    console.error(_error);
     return <h2>Error</h2>;
   }
-  if (album === null) return <h2>{JSON.stringify(album)}</h2>;
+  if (album === null)
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-3 text-center px-4">
+        <h2 className="font-cal text-2xl">Artist not found</h2>
+        <p className="text-muted-foreground">We couldn&apos;t load this artist. Try again later.</p>
+      </div>
+    );
 
   const imageURL =
     album?.artistDetail.image[2]?.link ||
@@ -96,16 +100,12 @@ export default async function Page({ params }: { params: { slug: string } }) {
             </AspectRatio>
           </div>
           <h1 className="font-cal text-2xl  mt-4 ">
-            <Balancer>
-              {album.artistDetail.name.split("(")[0].replace("&#039;", "'")}
-            </Balancer>
+            <Balancer>{album.artistDetail.name.split("(")[0].replace("&#039;", "'")}</Balancer>
           </h1>
           <div className="flex justify-between gap-x-2 items-center">
             <div>
-              <p className="line-clamp-1 text-white">
-                {album.artistDetail.isVerified
-                  ? "Verified Account"
-                  : "Non-Verified Account"}
+              <p className="line-clamp-1 text-foreground">
+                {album.artistDetail.isVerified ? "Verified Account" : "Non-Verified Account"}
               </p>
 
               <p>{album.artistSongs.results.length} Songs </p>
@@ -115,26 +115,16 @@ export default async function Page({ params }: { params: { slug: string } }) {
         </div>
       </section>
       <section>
-        {album.artistSongs.results?.length > 0 && (
-          <>
-            <h2 className="font-cal text-2xl  my-4 ">
-              <Balancer>Popular Songs</Balancer>
-            </h2>
-
-            <div className="flex flex-col gap-3 sm:gap-5 ">
-              {album.artistSongs.results?.map((song) => (
-                <AlbumPageCard
-                  key={song.id + song.name}
-                  duration={song.duration}
-                  id={song.id}
-                  image={song.image}
-                  name={song.name}
-                  primaryArtists={song.primaryArtists}
-                />
-              ))}
-            </div>
-          </>
-        )}
+        <ArtistTabs
+          artistId={params.slug.split("/")[0]}
+          songs={album.artistSongs.results.map((song) => ({
+            id: song.id,
+            name: song.name,
+            duration: song.duration,
+            primaryArtists: song.primaryArtists,
+            image: song.image,
+          }))}
+        />
       </section>
     </section>
   );

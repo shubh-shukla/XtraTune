@@ -1,10 +1,10 @@
+import Image from "next/image";
+import { Balancer } from "react-wrap-balancer";
 import { AlbumPageCard } from "@/components/album-page-card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { music } from "@/lib/music";
-import { AlbumData } from "@/typings/albumdata";
-import { Playlist } from "@/typings/playlist";
-import Image from "next/image";
-import { Balancer } from "react-wrap-balancer";
+import { type AlbumData } from "@/typings/albumdata";
+import { type Playlist } from "@/typings/playlist";
 import { AlbumPlayBtn } from "./album-play-btn";
 
 const getAlbumData = async (slug: string) => {
@@ -42,8 +42,7 @@ const getAlbumData = async (slug: string) => {
     };
 
     return normalized;
-  } else 
-  if (type == "artist") {
+  } else if (type == "artist") {
     const { data } = await music.get(`/artists/${id}`);
     const songsRes = await music.get(`/artists/${id}/songs?page=0&limit=50`);
 
@@ -65,8 +64,7 @@ const getAlbumData = async (slug: string) => {
     };
 
     return normalized;
-  } else 
-  {
+  } else {
     const pageSize = 100;
     let page = 0;
     let allSongs: any[] = [];
@@ -106,7 +104,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
   try {
     album = await getAlbumData(params.slug);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return <h2>Error</h2>;
   }
   if (album.data.songs.length === 0) return <h2>Invalid URL</h2>;
@@ -131,24 +129,19 @@ export default async function Page({ params }: { params: { slug: string } }) {
             </AspectRatio>
           </div>
           <h1 className="font-cal text-2xl  mt-4 ">
-            <Balancer>{album.data.name.split("(")[0].replace("&#039;","'")}</Balancer>
+            <Balancer>{album.data.name.split("(")[0].replace("&#039;", "'")}</Balancer>
           </h1>
           <div className="flex justify-between gap-x-2 items-center">
             <div>
-              {/* @ts-ignore */}
+              {/* @ts-expect-error – union type narrowing */}
               {album?.data?.primaryArtists ? (
-                <p className="line-clamp-1">
-                  by {(album as AlbumData).data.primaryArtists}
-                </p>
+                <p className="line-clamp-1">by {(album as AlbumData).data.primaryArtists}</p>
               ) : (
-                <p className="line-clamp-1">
-                  by {(album as Playlist).data.username}
-                </p>
+                <p className="line-clamp-1">by {(album as Playlist).data.username}</p>
               )}
 
               <p>
-                {album.data.songCount}{" "}
-                {album.data.songCount == "1" ? "Song" : "Songs"}
+                {album.data.songCount} {album.data.songCount == "1" ? "Song" : "Songs"}
               </p>
             </div>
             <AlbumPlayBtn album={album.data.songs} />
