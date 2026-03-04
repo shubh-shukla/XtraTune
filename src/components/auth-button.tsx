@@ -1,9 +1,10 @@
 "use client";
 
-import { useSession, signIn, signOut } from "next-auth/react";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { LogOut, Settings } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { signIn, signOut } from "next-auth/react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,6 +12,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/hooks/use-auth";
+import { clearLikes } from "@/store/likes-slice";
+import { store } from "@/store/store";
 
 const getInitials = (name?: string | null, email?: string | null) => {
   const source = name || email || "";
@@ -21,14 +25,24 @@ const getInitials = (name?: string | null, email?: string | null) => {
 };
 
 export function AuthButton() {
-  const { data, status } = useSession();
-  const user = data?.user;
+  const { user, isLoading, isAuthenticated } = useAuth();
 
-  if (status === "loading") {
+  if (isLoading) {
     return <div className="h-10 w-10 rounded-full bg-muted animate-pulse" />;
   }
 
-  if (!user) {
+  const handleSignOut = async () => {
+    // Clear localStorage likes/saves so they don't leak to guest mode
+    store.dispatch(clearLikes());
+    // Clear the httpOnly session cookie via our API
+    try {
+      await fetch("/api/user/logout", { method: "POST", credentials: "same-origin" });
+    } catch {}
+    // Then do NextAuth sign-out
+    signOut({ callbackUrl: "/" });
+  };
+
+  if (!isAuthenticated || !user) {
     return (
       <Button
         variant="outline"
@@ -49,7 +63,7 @@ export function AuthButton() {
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            className="relative flex items-center justify-center h-10 w-10 rounded-full border border-white/10 bg-gradient-to-br from-slate-800/80 to-slate-900/80 shadow-lg transition duration-150 ease-out hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-primary/60"
+            className="relative flex items-center justify-center h-10 w-10 rounded-full border border-border bg-muted shadow-lg transition duration-150 ease-out hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-primary/60"
             aria-label="Account menu"
           >
             {user.image ? (
@@ -69,11 +83,11 @@ export function AuthButton() {
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
-          className="w-64 overflow-hidden rounded-2xl border border-white/10 bg-slate-900/95 text-white shadow-2xl backdrop-blur-md p-0"
+          className="w-64 overflow-hidden rounded-2xl border border-border bg-popover text-popover-foreground shadow-2xl backdrop-blur-md p-0"
           align="end"
           sideOffset={4}
         >
-          <div className="px-4 py-3 flex items-center gap-3 bg-slate-800/60 border-b border-white/5">
+          <div className="px-4 py-3 flex items-center gap-3 bg-muted/50 border-b border-border">
             {user.image ? (
               <Image
                 src={user.image}
@@ -90,30 +104,34 @@ export function AuthButton() {
             )}
             <div className="text-sm leading-tight">
               <p className="font-semibold line-clamp-1">{user.name ?? "User"}</p>
-              {user.email && <p className="text-white/70 text-xs line-clamp-1">{user.email}</p>}
+              {user.email && (
+                <p className="text-muted-foreground text-xs line-clamp-1">{user.email}</p>
+              )}
             </div>
           </div>
-          <DropdownMenuSeparator className="bg-white/10" />
+          <DropdownMenuSeparator className="bg-border" />
           <DropdownMenuItem
-            className="cursor-pointer px-4 py-3 text-sm font-medium text-white/90 transition duration-150 ease-out focus:bg-white/5 focus:text-white"
-            onSelect={(e) => e.preventDefault()}
+            className="cursor-pointer px-4 py-3 text-sm font-medium text-popover-foreground transition duration-150 ease-out focus:bg-muted"
+            asChild
           >
-            <div className="flex items-center gap-3">
-              <span className="grid h-9 w-9 place-items-center rounded-xl bg-white/5 text-white">
-                <Settings className="h-4 w-4" />
-              </span>
-              <div className="flex flex-col leading-tight">
-                <span>Settings</span>
-                <span className="text-xs text-white/60">Profile & preferences</span>
+            <Link href="/settings">
+              <div className="flex items-center gap-3">
+                <span className="grid h-9 w-9 place-items-center rounded-xl bg-muted text-foreground">
+                  <Settings className="h-4 w-4" />
+                </span>
+                <div className="flex flex-col leading-tight">
+                  <span>Settings</span>
+                  <span className="text-xs text-muted-foreground">Profile & preferences</span>
+                </div>
               </div>
-            </div>
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem
-            className="cursor-pointer px-4 py-3 text-sm font-semibold text-rose-300 transition duration-150 ease-out focus:bg-rose-500/10 focus:text-rose-200"
-            onSelect={() => signOut({ callbackUrl: "/" })}
+            className="cursor-pointer px-4 py-3 text-sm font-semibold text-destructive transition duration-150 ease-out focus:bg-destructive/10"
+            onSelect={() => handleSignOut()}
           >
             <div className="flex items-center gap-3">
-              <span className="grid h-9 w-9 place-items-center rounded-xl bg-rose-500/15 text-rose-200">
+              <span className="grid h-9 w-9 place-items-center rounded-xl bg-destructive/15 text-destructive">
                 <LogOut className="h-4 w-4" />
               </span>
               <span>Logout</span>
