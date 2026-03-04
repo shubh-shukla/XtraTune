@@ -1,10 +1,10 @@
 "use client";
 import Image from "next/image";
-import { Card } from "./ui/card";
-import { Button } from "./ui/button";
+import { useAppSelector, useAppDispatch } from "@/store/hooks";
+import { setCurrentSong, setPlaylist } from "@/store/player-slice";
 import { Icons } from "./icons";
-import { useSongStore } from "@/store/song-store";
-import { useEffect } from "react";
+import { Button } from "./ui/button";
+import { Card } from "./ui/card";
 interface AlbumPageCardProps {
   name: string;
   id: string;
@@ -21,10 +21,9 @@ export const AlbumPageCard = ({
   duration,
   image,
 }: AlbumPageCardProps) => {
-  const setCurrentIndex = useSongStore((state) => state.setCurrentSong);
-  const setsong = useSongStore((state) => state.setPlaylist);
-  const songs = useSongStore((state) => state.playlist);
-  const currentIndex = useSongStore((state) => state.currentSong);
+  const dispatch = useAppDispatch();
+  const songs = useAppSelector((s) => s.player.playlist);
+  const _currentIndex = useAppSelector((s) => s.player.currentSong);
   return (
     <Card className="border pb-0 overflow-hidden flex items-center gap-x-2 sm:gap-x-5 pr-4">
       <Image
@@ -44,16 +43,16 @@ export const AlbumPageCard = ({
         </p>
         <div className=" hidden sm:flex justify-between items-center">
           <p className="text-muted-foreground">
-            {(Number(duration) / 60).toPrecision(2)} minutes
+            {Math.floor(Number(duration) / 60)}:{String(Number(duration) % 60).padStart(2, "0")} min
           </p>
           <Button
             onClick={() => {
-              if (songs.includes({ id })) {
-                if (songs[songs.length - 1].id === id) return;
-                setCurrentIndex(songs.findIndex((song) => song.id === id));
+              const idx = songs.findIndex((song) => song.id === id);
+              if (idx !== -1) {
+                dispatch(setCurrentSong(idx));
                 return;
               }
-              setsong([...songs, { id }],songs.length);
+              dispatch(setPlaylist({ playlist: [...songs, { id }], index: songs.length }));
             }}
             variant="secondary"
             className=" active:scale-90 transition-transform ml-auto"
@@ -66,12 +65,12 @@ export const AlbumPageCard = ({
 
       <Button
         onClick={() => {
-          if (songs.includes({ id })) {
-            if (songs[songs.length - 1].id === id) return;
-            setCurrentIndex(songs.findIndex((song) => song.id === id));
+          const idx = songs.findIndex((song) => song.id === id);
+          if (idx !== -1) {
+            dispatch(setCurrentSong(idx));
             return;
           }
-          setsong([...songs, { id }],songs.length);
+          dispatch(setPlaylist({ playlist: [...songs, { id }], index: songs.length }));
         }}
         variant="secondary"
         className=" active:scale-90 transition-transform sm:hidden ml-auto"
