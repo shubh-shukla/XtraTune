@@ -1,11 +1,14 @@
 "use client";
 
-import Image from "next/image";
-import { useRef, useState } from "react";
-import { useSongStore } from "@/store/song-store";
-import { cn } from "@/lib/utils";
 import { Heart, X, GripVertical } from "lucide-react";
-import { useLikeStore } from "@/store/likes-store";
+import Image from "next/image";
+import { signIn } from "next-auth/react";
+import { useRef, useState } from "react";
+import { useAudioTab } from "@/hooks/use-audio-tab";
+import { useFavorites } from "@/hooks/use-favorites";
+import { cn } from "@/lib/utils";
+import { useAppSelector, useAppDispatch } from "@/store/hooks";
+import { setCurrentSong, removeAt } from "@/store/player-slice";
 
 const formatDuration = (seconds?: number) => {
   if (!seconds || Number.isNaN(seconds)) return "";
@@ -17,12 +20,12 @@ const formatDuration = (seconds?: number) => {
 };
 
 export const QueuePanel = () => {
-  const playlist = useSongStore((state) => state.playlist);
-  const current = useSongStore((state) => state.currentSong);
-  const setCurrent = useSongStore((state) => state.setCurrentSong);
-  const removeAt = useSongStore((state) => state.removeAt);
-  const toggleLike = useLikeStore((state) => state.toggleLike);
-  const likedTracks = useLikeStore((state) => state.likes.track);
+  const dispatch = useAppDispatch();
+  const playlist = useAppSelector((s) => s.player.playlist);
+  const current = useAppSelector((s) => s.player.currentSong);
+  const autoplay = useAppSelector((s) => s.player.autoplay);
+  const { isLiked: checkLiked, toggle: toggleFav, needsAuth } = useFavorites("track");
+  const { claimAudio } = useAudioTab();
   const [open, setOpen] = useState(false);
   const enterTimer = useRef<NodeJS.Timeout | null>(null);
   const leaveTimer = useRef<NodeJS.Timeout | null>(null);
@@ -41,28 +44,36 @@ export const QueuePanel = () => {
 
   return (
     <div className="fixed right-2 top-24 z-40 hidden lg:block">
-      <div
-        className="relative group"
-        onMouseEnter={handleEnter}
-        onMouseLeave={handleLeave}
-      >
-        <div className="w-20 transition-all duration-300 ease-out overflow-hidden rounded-2xl border border-border bg-background/90 shadow-2xl backdrop-blur-lg"
+      <div className="relative group" onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
+        <div
+          className="w-20 transition-all duration-300 ease-out overflow-hidden rounded-2xl border border-border bg-card shadow-2xl backdrop-blur-lg"
           style={{ width: open ? "20rem" : "5rem" }}
         >
           <div className="flex items-center justify-between px-3 py-2 border-b border-border/60">
             <span className="text-sm font-semibold">Queue</span>
-            <span className="text-xs text-muted-foreground">{playlist.length}</span>
+            <div className="flex items-center gap-1.5">
+              {autoplay && (
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-primary bg-primary/10 px-1.5 py-0.5 rounded">
+                  Autoplay
+                </span>
+              )}
+              <span className="text-xs text-muted-foreground">{playlist.length}</span>
+            </div>
           </div>
+
           <div className="max-h-[72vh] overflow-auto py-2">
             {playlist.map((song, idx) => {
               const active = idx === current;
               return (
                 <button
                   key={`${song.id}-${idx}`}
-                  onClick={() => setCurrent(idx)}
+                  onClick={() => {
+                    claimAudio();
+                    dispatch(setCurrentSong(idx));
+                  }}
                   className={cn(
                     "flex w-full items-center gap-3 px-3 py-2 text-left transition hover:bg-primary/5",
-                    active && "bg-primary/10"
+                    active && "bg-primary/10",
                   )}
                 >
                   <GripVertical className="h-4 w-4 text-muted-foreground/70" />
@@ -77,7 +88,7 @@ export const QueuePanel = () => {
                     <p
                       className={cn(
                         "text-sm font-medium leading-tight truncate",
-                        active && "text-primary"
+                        active && "text-primary",
                       )}
                     >
                       {song.title || "Untitled"}
@@ -92,22 +103,31 @@ export const QueuePanel = () => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      toggleLike("track", song.id);
+                      if (needsAuth) {
+                        signIn(undefined, { callbackUrl: window.location.pathname });
+                        return;
+                      }
+                      toggleFav(song.id);
                     }}
-                    aria-label={likedTracks.includes(song.id) ? "Unlike" : "Like"}
+                    aria-label={checkLiked(song.id) ? "Unlike" : "Like"}
                     className={cn(
                       "grid h-8 w-8 place-items-center rounded-full transition",
-                      likedTracks.includes(song.id)
+                      checkLiked(song.id)
                         ? "bg-rose-500/15 text-rose-400"
-                        : "text-muted-foreground hover:bg-muted"
+                        : "text-muted-foreground hover:bg-muted",
                     )}
                   >
-                    <Heart className={cn("h-4 w-4", likedTracks.includes(song.id) && "fill-rose-500 text-rose-400")}/>
+                    <Heart
+                      className={cn(
+                        "h-4 w-4",
+                        checkLiked(song.id) && "fill-rose-500 text-rose-400",
+                      )}
+                    />
                   </button>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      removeAt(idx);
+                      dispatch(removeAt(idx));
                     }}
                     aria-label="Remove from queue"
                     className="grid h-8 w-8 place-items-center rounded-full text-muted-foreground transition hover:bg-muted"
