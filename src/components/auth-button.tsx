@@ -4,6 +4,7 @@ import { LogOut, Settings } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { signIn, signOut } from "next-auth/react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -26,6 +27,7 @@ const getInitials = (name?: string | null, email?: string | null) => {
 
 export function AuthButton() {
   const { user, isLoading, isAuthenticated } = useAuth();
+  const [imgFailed, setImgFailed] = useState(false);
 
   if (isLoading) {
     return <div className="h-10 w-10 rounded-full bg-muted animate-pulse" />;
@@ -66,13 +68,15 @@ export function AuthButton() {
             className="relative flex items-center justify-center h-10 w-10 rounded-full border border-border bg-muted shadow-lg transition duration-150 ease-out hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-primary/60"
             aria-label="Account menu"
           >
-            {user.image ? (
+            {user.image && !imgFailed ? (
               <Image
                 src={user.image}
                 alt={user.name ?? "user"}
                 width={40}
                 height={40}
                 className="h-full w-full rounded-full object-cover"
+                referrerPolicy="no-referrer"
+                onError={() => setImgFailed(true)}
                 unoptimized
               />
             ) : (
@@ -88,13 +92,15 @@ export function AuthButton() {
           sideOffset={4}
         >
           <div className="px-4 py-3 flex items-center gap-3 bg-muted/50 border-b border-border">
-            {user.image ? (
+            {user.image && !imgFailed ? (
               <Image
                 src={user.image}
                 alt={user.name ?? "user"}
                 width={40}
                 height={40}
                 className="h-10 w-10 rounded-full object-cover"
+                referrerPolicy="no-referrer"
+                onError={() => setImgFailed(true)}
                 unoptimized
               />
             ) : (
