@@ -42,11 +42,20 @@ function SignInContent() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
   const error = searchParams.get("error");
+  const autoProvider = searchParams.get("provider");
   const [providers, setProviders] = useState<Record<string, Provider> | null>(null);
 
   useEffect(() => {
     getProviders().then((p) => setProviders(p as any));
   }, []);
+
+  // Auto-trigger sign-in when ?provider=github|google is in the URL (used by mobile app)
+  useEffect(() => {
+    if (!autoProvider || !providers) return;
+    if (providers[autoProvider]) {
+      signIn(autoProvider, { callbackUrl });
+    }
+  }, [autoProvider, providers, callbackUrl]);
 
   const providerIcon = (id: string) => {
     if (id === "github") return <GitHubIcon className="h-5 w-5" />;
