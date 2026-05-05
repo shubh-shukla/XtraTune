@@ -5,6 +5,7 @@ import { gethomepageData } from "@/utils/get-home-data";
 import { Albums } from "./sections/albums";
 import { ForYou } from "./sections/for-you";
 import { Playlists } from "./sections/playlist";
+import { SmartPlaylists } from "./sections/smart-playlists";
 import { TopCharts } from "./sections/top-charts";
 import { TrendingSongs } from "./sections/trending-songs";
 
@@ -62,6 +63,7 @@ export default async function Home() {
       <TrendingSongs songs={songs} albums={trendingAlbums} />
       <TopCharts charts={charts} />
       <Albums albums={albums} />
+      <SmartPlaylists />
       <Playlists playlists={playlists} />
     </main>
   );
