@@ -32,6 +32,28 @@ async function _setup() {
   // ── playlists collection ──────────────────────
   await db.collection("playlists").createIndex({ userId: 1 });
   await db.collection("playlists").createIndex({ userId: 1, slug: 1 }, { unique: true });
+
+  // ── listening_history collection ──────────────
+  await db
+    .collection<ListeningHistoryDoc>("listening_history")
+    .createIndex({ userId: 1, songId: 1 }, { unique: true });
+  await db
+    .collection<ListeningHistoryDoc>("listening_history")
+    .createIndex({ userId: 1, playCount: -1 });
+  await db
+    .collection<ListeningHistoryDoc>("listening_history")
+    .createIndex({ userId: 1, lastPlayedAt: -1 });
+
+  // ── AI output caches ──────────────────────────
+  await db
+    .collection<TasteProfileDoc>("taste_profiles")
+    .createIndex({ userId: 1 }, { unique: true });
+  await db
+    .collection<SmartPlaylistsDoc>("smart_playlists")
+    .createIndex({ userId: 1 }, { unique: true });
+  await db
+    .collection<RecommendationCacheDoc>("recommendation_cache")
+    .createIndex({ userId: 1 }, { unique: true });
 }
 
 // ── TypeScript types for documents ──────────────
@@ -94,4 +116,45 @@ export interface PlaylistDoc {
   songs: PlaylistSongDoc[];
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface ListeningHistoryDoc {
+  userId: string;
+  songId: string;
+  title: string;
+  artist: string;
+  language: string;
+  playCount: number;
+  lastPlayedAt: Date;
+}
+
+export interface TasteProfileDoc {
+  userId: string;
+  profile: {
+    topGenres: string[];
+    topMoods: string[];
+    topLanguages: string[];
+    topArtists: string[];
+    vibeDescription: string;
+  };
+  generatedAt: Date;
+  basedOnSongCount: number;
+}
+
+export interface SmartPlaylistsDoc {
+  userId: string;
+  playlists: Array<{
+    name: string;
+    description: string;
+    songIds: string[];
+    theme: string;
+  }>;
+  generatedAt: Date;
+}
+
+export interface RecommendationCacheDoc {
+  userId: string;
+  candidatePoolHash: string;
+  ranked: Array<{ songId: string; score: number; reason: string }>;
+  generatedAt: Date;
 }
