@@ -21,14 +21,47 @@ export interface PipelineOutput {
   candidatePoolHash: string;
 }
 
+const EMPTY_PROFILE: TasteProfile = {
+  topGenres: [],
+  topMoods: [],
+  topLanguages: [],
+  topArtists: [],
+  vibeDescription: "",
+};
+
+const scoreOnlyRanking = (candidates: Candidate[]): RankedItem[] =>
+  candidates.map((c, i) => ({ songId: c.songId, score: 100 - i, reason: "" }));
+
 export async function runRecommendationPipeline(input: PipelineInput): Promise<PipelineOutput> {
   const candidatePoolHash =
     input._testHashOverride ?? hashCandidatePool(input.candidates.map((c) => c.songId));
 
-  const profile = input.cachedProfile ?? (await generateTasteProfile(input.historyTop));
+  let profile: TasteProfile;
+  let profileFailed = false;
+
+  if (input.cachedProfile) {
+    profile = input.cachedProfile;
+  } else {
+    try {
+      profile = await generateTasteProfile(input.historyTop);
+    } catch (err) {
+      console.error("[recommendations] taste profile failed, falling back:", err);
+      profile = EMPTY_PROFILE;
+      profileFailed = true;
+    }
+  }
 
   if (input.cachedRanking && input.cachedRanking.candidatePoolHash === candidatePoolHash) {
     return { source: "cache", profile, ranked: input.cachedRanking.ranked, candidatePoolHash };
+  }
+
+  if (profileFailed) {
+    return {
+      source: "fallback",
+      profile,
+      ranked: scoreOnlyRanking(input.candidates),
+      candidatePoolHash,
+    };
   }
 
   try {
@@ -36,11 +69,11 @@ export async function runRecommendationPipeline(input: PipelineInput): Promise<P
     return { source: "ai", profile, ranked, candidatePoolHash };
   } catch (err) {
     console.error("[recommendations] rerank failed, falling back:", err);
-    const ranked: RankedItem[] = input.candidates.map((c, i) => ({
-      songId: c.songId,
-      score: 100 - i,
-      reason: "",
-    }));
-    return { source: "fallback", profile, ranked, candidatePoolHash };
+    return {
+      source: "fallback",
+      profile,
+      ranked: scoreOnlyRanking(input.candidates),
+      candidatePoolHash,
+    };
   }
 }

@@ -54,6 +54,30 @@ describe("runRecommendationPipeline", () => {
     expect(rerankCandidates).not.toHaveBeenCalled();
   });
 
+  it("falls back to score-only ranking when taste-profile generation throws", async () => {
+    generateTasteProfile.mockRejectedValue(new Error("gemini quota"));
+    const out = await runRecommendationPipeline({
+      historyTop: [{ songId: "s0", title: "T", artist: "A", language: "en", playCount: 5 }],
+      candidates: [
+        { songId: "s1", title: "T1", artist: "A1" },
+        { songId: "s2", title: "T2", artist: "A2" },
+      ],
+      cachedProfile: null,
+      cachedRanking: null,
+    });
+    expect(out.source).toBe("fallback");
+    expect(out.ranked).toHaveLength(2);
+    expect(out.ranked[0].reason).toBe("");
+    expect(out.profile).toEqual({
+      topGenres: [],
+      topMoods: [],
+      topLanguages: [],
+      topArtists: [],
+      vibeDescription: "",
+    });
+    expect(rerankCandidates).not.toHaveBeenCalled();
+  });
+
   it("falls back to score-only ranking when AI throws", async () => {
     generateTasteProfile.mockResolvedValue(profile);
     rerankCandidates.mockRejectedValue(new Error("quota"));

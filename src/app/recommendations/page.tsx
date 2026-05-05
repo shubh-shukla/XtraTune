@@ -4,18 +4,17 @@ import { Sparkles, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { SongCard } from "@/components/song-card";
 import { Button } from "@/components/ui/button";
+import { useCsrf, apiFetch } from "@/hooks/use-csrf";
 import { useRecommendations } from "@/hooks/use-recommendations";
 
 export default function RecommendationsPage() {
   const { items, isLoading, refresh } = useRecommendations();
+  const csrf = useCsrf();
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await fetch("/api/recommendations/refresh", {
-      method: "POST",
-      credentials: "same-origin",
-    });
+    await apiFetch("/api/recommendations/refresh", { method: "POST" }, csrf);
     await refresh();
     setRefreshing(false);
   };
