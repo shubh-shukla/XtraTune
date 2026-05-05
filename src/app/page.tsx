@@ -3,6 +3,7 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { gethomepageData } from "@/utils/get-home-data";
 import { Albums } from "./sections/albums";
+import { ForYou } from "./sections/for-you";
 import { Playlists } from "./sections/playlist";
 import { TopCharts } from "./sections/top-charts";
 import { TrendingSongs } from "./sections/trending-songs";
@@ -57,6 +58,7 @@ export default async function Home() {
         </div>
       </section>
 
+      <ForYou />
       <TrendingSongs songs={songs} albums={trendingAlbums} />
       <TopCharts charts={charts} />
       <Albums albums={albums} />
