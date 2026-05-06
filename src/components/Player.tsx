@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import useSound from "use-sound";
 import { useAutoplay } from "@/hooks/use-autoplay";
 import { useFavorites } from "@/hooks/use-favorites";
+import { useListeningHistory } from "@/hooks/use-listening-history";
 import { usePlayback } from "@/hooks/use-playback";
 import { cn } from "@/lib/utils";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
@@ -47,6 +48,10 @@ export const Player = ({
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [barPostion, setBarPosition] = useState(0);
+  useListeningHistory(
+    trackId ? { id: trackId, title, artist: album } : null,
+    Math.floor(barPostion ?? 0),
+  );
   const [downloading, setDownloading] = useState(false);
   const [link] = useState(url);
   const [showAddToPlaylist, setShowAddToPlaylist] = useState(false);
